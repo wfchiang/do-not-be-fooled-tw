@@ -4,6 +4,8 @@ setup(
     name='do-not-be-fooled-tw', 
     version='0.1', 
     install_requires=[
+        'openpyxl', 
+        'pandas', 
         'scrapy'
     ], 
     packages=find_packages('src'), 
