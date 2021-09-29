@@ -47,26 +47,30 @@ class WebSpiderMan (scrapy.Spider):
         yield scrapy.Request(self.start_at, self.parse)
 
     def parse (self, response):
-        now_time = datetime.datetime.now() 
+        url = response.url 
+        title = get_title(response) 
+        articles = get_articles(response) 
+        links = get_links(response) 
 
-        if (now_time - self.start_time <= datetime.timedelta(seconds=self.life_in_sec)):  
-            url = response.url 
-            title = get_title(response) 
-            articles = get_articles(response) 
-            links = get_links(response) 
+        if (len(articles) > 0): 
+            article = ' '.join(articles)
 
-            for a in articles: 
+            if (not self.data_manager.is_visited(url)): 
                 self.data_manager.add(
                     url=url, 
                     title=title, 
-                    article=a
+                    article=article
                 )
 
-            for l in links: 
-                try: 
-                    yield scrapy.Request(l, self.parse)
-                except: 
-                    pass 
+                for l in links: 
+                    now_time = datetime.datetime.now() 
+                    if (now_time - self.start_time > datetime.timedelta(seconds=self.life_in_sec)): 
+                        break 
+
+                    try: 
+                        yield scrapy.Request(l, self.parse)
+                    except: 
+                        pass 
 
     def close (self, reason): 
         self.data_manager.save() 
