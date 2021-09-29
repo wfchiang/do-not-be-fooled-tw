@@ -7,5 +7,5 @@ pip install openpyxl
 ```
 
 ```
-scrapy runspider ./src/do_not_be_fooled_tw/data/web_crawler.py -a start_at=https://www.setn.com -a life_in_sec=3
+scrapy runspider ./src/do_not_be_fooled_tw/data/web_crawler.py -a start_at=https://www.setn.com -a life_in_sec=3 -a output=20210929_setn.xlsx 
 ```
