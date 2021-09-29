@@ -5,6 +5,14 @@ import datetime
 
 from data_manager import DataManager 
 
+# ====
+# Globals 
+# ====
+BLACK_URL_SEGMENTS = [
+    'support.apple.com' 
+]
+
+
 # ==== 
 # Utils for data retrieval  
 # ====
@@ -33,12 +41,15 @@ class WebSpiderMan (scrapy.Spider):
         assert('start_at' in arg), '[ERROR] argument "start_at" is missed...'
         self.start_at = arg['start_at']
 
+        assert('output' in arg), '[ERROR] argument "output" is missed...'
+        output_filepath = arg['output']
+
         if ('life_in_sec' in arg): 
             self.life_in_sec = int(arg['life_in_sec']) 
         else: 
             self.life_in_sec = 1 
 
-        self.data_manager = DataManager(output_filepath='./test.xlsx')
+        self.data_manager = DataManager(output_filepath=output_filepath)
         
         self.start_time = datetime.datetime.now() 
     
@@ -46,11 +57,24 @@ class WebSpiderMan (scrapy.Spider):
         assert(type(self.start_at ) is str) 
         yield scrapy.Request(self.start_at, self.parse)
 
+    def is_timeout (self): 
+        now_time = datetime.datetime.now() 
+        if (now_time - self.start_time > datetime.timedelta(seconds=self.life_in_sec)): 
+            return True
+        return False 
+
     def parse (self, response):
         url = response.url 
         title = get_title(response) 
         articles = get_articles(response) 
         links = get_links(response) 
+
+        if (self.is_timeout()): 
+            return 
+
+        for bseg in BLACK_URL_SEGMENTS: 
+            if (url.find(bseg) >= 0): 
+                return 
 
         if (len(articles) > 0): 
             article = ' '.join(articles)
@@ -63,10 +87,6 @@ class WebSpiderMan (scrapy.Spider):
                 )
 
                 for l in links: 
-                    now_time = datetime.datetime.now() 
-                    if (now_time - self.start_time > datetime.timedelta(seconds=self.life_in_sec)): 
-                        break 
-
                     try: 
                         yield scrapy.Request(l, self.parse)
                     except: 
