@@ -1,4 +1,5 @@
 from typing import List 
+from urllib.parse import urlparse 
 import scrapy 
 
 import datetime 
@@ -8,23 +9,32 @@ from data_manager import DataManager
 # ====
 # Globals 
 # ====
-BLACK_URL_SEGMENTS = [
-    'support.apple.com' 
+WHITE_URL_HOSTNAME_SUFFIXES = [
+    'setn.com', 
+    'tw.news.yahoo.com'
 ]
 
+BLACK_URL_SEGMENTS = [
+    '/login/'
+]
 
 # ==== 
 # Utils for data retrieval  
 # ====
 def get_title (web_res): 
     assert(isinstance(web_res, scrapy.http.Response))
-    titles = web_res.css('title::text').getall() 
-    return ' '.join(titles)
+    titles_h1 = web_res.css('h1::text').getall() 
+    titles_h2 = web_res.css('h2::text').getall() 
+    titles_h3 = web_res.css('h3::text').getall() 
+    all_titles = titles_h1 + titles_h2 + titles_h3
+    return (' '.join(all_titles)).strip()
 
-def get_articles (web_res): 
+def get_article (web_res): 
     assert(isinstance(web_res, scrapy.http.Response))
-    articles = web_res.css('span::text').getall() 
-    return articles
+    articles_span_text = web_res.css('span::text').getall() 
+    articles_p = web_res.css('p::text').getall() 
+    all_articles = articles_span_text + articles_p
+    return (' '.join(all_articles)).strip() 
 
 def get_links (web_res): 
     assert(isinstance(web_res, scrapy.http.Response))
@@ -63,22 +73,37 @@ class WebSpiderMan (scrapy.Spider):
             return True
         return False 
 
+    def is_interesting_url (self, url): 
+        parsed_url = urlparse(url) 
+
+        is_whitelisted = False 
+
+        for h_suffix in WHITE_URL_HOSTNAME_SUFFIXES: 
+            if (parsed_url.hostname.endswith(h_suffix)): 
+                is_whitelisted = True 
+
+        if (not is_whitelisted): 
+            return False 
+            
+        for seg in BLACK_URL_SEGMENTS: 
+            if (url.find(seg) >= 0): 
+                return False 
+
+        return True 
+
     def parse (self, response):
         url = response.url 
         title = get_title(response) 
-        articles = get_articles(response) 
+        article = get_article(response) 
         links = get_links(response) 
 
         if (self.is_timeout()): 
             return 
 
-        for bseg in BLACK_URL_SEGMENTS: 
-            if (url.find(bseg) >= 0): 
-                return 
+        if (not self.is_interesting_url(url)): 
+            return 
 
-        if (len(articles) > 0): 
-            article = ' '.join(articles)
-
+        if (len(article) > 0): 
             if (not self.data_manager.is_visited(url)): 
                 self.data_manager.add(
                     url=url, 
