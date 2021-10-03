@@ -11,7 +11,8 @@ from data_manager import DataManager
 # ====
 WHITE_URL_HOSTNAME_SUFFIXES = [
     'setn.com', 
-    'tw.news.yahoo.com'
+    'tw.news.yahoo.com', 
+    'www.chinatimes.com'
 ]
 
 BLACK_URL_SEGMENTS = [
@@ -21,20 +22,40 @@ BLACK_URL_SEGMENTS = [
 # ==== 
 # Utils for data retrieval  
 # ====
+def is_meaningful_article (article): 
+    if (len(article) < 4): 
+        return False 
+    return True 
+
 def get_title (web_res): 
     assert(isinstance(web_res, scrapy.http.Response))
-    titles_h1 = web_res.css('h1::text').getall() 
-    titles_h2 = web_res.css('h2::text').getall() 
-    titles_h3 = web_res.css('h3::text').getall() 
-    all_titles = titles_h1 + titles_h2 + titles_h3
-    return (' '.join(all_titles)).strip()
+    all_titles = [] 
+
+    all_titles = all_titles + web_res.css('h1::text').getall() 
+    all_titles = list(map(lambda t: t.strip(), all_titles))
+    all_titles = list(filter(lambda t: t!='', all_titles))
+
+    if (len(all_titles) == 0): 
+        all_titles = all_titles + web_res.css('h2::text').getall() 
+        all_titles = list(map(lambda t: t.strip(), all_titles))
+        all_titles = list(filter(lambda t: t!='', all_titles))
+
+    if (len(all_titles) == 0):
+        all_titles = all_titles + web_res.css('h3::text').getall() 
+        all_titles = list(map(lambda t: t.strip(), all_titles))
+        all_titles = list(filter(lambda t: t!='', all_titles))
+
+    return ('\n'.join(all_titles)).strip()
 
 def get_article (web_res): 
     assert(isinstance(web_res, scrapy.http.Response))
     articles_span_text = web_res.css('span::text').getall() 
     articles_p = web_res.css('p::text').getall() 
-    all_articles = articles_span_text + articles_p
-    return (' '.join(all_articles)).strip() 
+    all_articles = articles_span_text + articles_p 
+
+    all_articles = list(filter(is_meaningful_article, all_articles))
+
+    return ('\n'.join(all_articles)).strip() 
 
 def get_links (web_res): 
     assert(isinstance(web_res, scrapy.http.Response))
