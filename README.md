@@ -1,11 +1,9 @@
-# do-not-be-fooled-tw
+# do-not-be-fooled-tw 
 
 ```
-pip install scrapy 
-pip install pandas 
-pip install openpyxl 
+pip install .
 ```
 
 ```
-scrapy runspider ./src/do_not_be_fooled_tw/data/web_crawler.py -a start_at=https://www.setn.com -a life_in_sec=3 -a output=20210929_setn.xlsx 
+python -m do_not_be_fooled_tw.main --start-at=https://www.setn.com --life-in-sec 3 --output ./20211014_setn.xlsx 
 ```

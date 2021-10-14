@@ -6,7 +6,8 @@ setup(
     install_requires=[
         'openpyxl', 
         'pandas', 
-        'scrapy'
+        'scrapy', 
+        'click'
     ], 
     packages=find_packages('src'), 
     package_dir={
