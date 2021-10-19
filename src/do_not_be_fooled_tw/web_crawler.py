@@ -1,5 +1,5 @@
 from typing import List 
-from urllib.parse import urlparse 
+from urllib.parse import urlparse, urljoin 
 import scrapy 
 import pandas as pd 
 import threading 
@@ -231,6 +231,11 @@ class WebSpiderMan (scrapy.Spider):
 
         return True 
 
+    def is_abs_url (self, url): 
+        if (url.startswith('http') or url.startswith('www')): 
+            return True 
+        return False 
+
     def parse (self, response):
         url = response.url 
         title = get_title(response) 
@@ -253,7 +258,10 @@ class WebSpiderMan (scrapy.Spider):
 
                 for l in links: 
                     try: 
-                        yield scrapy.Request(l, self.parse)
+                        abs_l = l 
+                        if (not self.is_abs_url(l)): 
+                            abs_l = urljoin(url, l)
+                        yield scrapy.Request(abs_l, self.parse)
                     except: 
                         pass 
 
