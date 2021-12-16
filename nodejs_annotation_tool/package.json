@@ -1,0 +1,25 @@
+{
+    "name": "do-not-be-fooled-tw-annotation",
+    "description": "A simple web-based annotation tool for do_not_be_fooled_tw",
+    "version": "0.0.1",
+    "private": true,
+    "license": "Apache-2.0",
+    "author": "Wei-Fan Chiang",
+    "engines": {
+        "node": ">=14.0.0"
+    },
+    "scripts": {
+        "start": "node app.js",
+        "test": "mocha --exit test/*.test.js"
+    },
+    "dependencies": {
+        "express": "^4.17.1",
+        "@google-cloud/bigquery": "^5.9.3",
+        "@google-cloud/storage": "^5.0.0",
+        "google-auth-library": "^7.0.0"
+    },
+    "devDependencies": {
+        "mocha": "^9.0.0",
+        "supertest": "^6.0.0"
+    }
+}

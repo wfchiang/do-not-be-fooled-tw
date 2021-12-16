@@ -1,6 +1,17 @@
+# Google SDK 
+google-cloud-sdk-* 
+google-cloud-sdk/ 
+wfchiang-dev-service-account.json
+
+# NPM 
+node_modules/ 
+package-lock.json 
+
+# Python Build 
 *.egg-info/
 dist/ 
 __pycache__/
-*.xlsx
 
-node_modules/ 
+# MISC 
+*.tar.gz
+*.xlsx
