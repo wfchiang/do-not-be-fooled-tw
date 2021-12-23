@@ -8,6 +8,8 @@ const path = require('path');
 const {BigQuery} = require('@google-cloud/bigquery');
 
 const app = express();
+app.set('view engine', 'pug'); 
+
 const bigquery = new BigQuery() 
 
 
@@ -44,19 +46,29 @@ app.get('/ping', (req, res) => {
     res.json({}); 
 }); 
 
+// app.get('/', (req, res) => {
+//     res.render('index.pug'); 
+// });
+
 app.get('/', (req, res) => {
     bq_query()
         .then(rows => {
             console.log('>> begin <<'); 
             console.log(rows);
             console.log('>> end <<');
-            res.sendFile(path.join(__dirname, "/templates/index.html"));        
+            res.render('list.pug', {
+                rows: rows
+            })
+            // res.sendFile(path.join(__dirname, "/templates/index.html"));        
         }) 
         .catch(err => {
             console.log(err); 
-            res.status(500).send({
-                message: err 
-            });
+            res.status(500).render(
+                'error.pug', 
+                {
+                    message: err 
+                }
+            );
         }); 
 
     console.log('bq_query jon scheduled'); 

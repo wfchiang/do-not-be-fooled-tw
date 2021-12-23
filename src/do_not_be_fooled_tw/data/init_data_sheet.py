@@ -1,4 +1,5 @@
 import os 
+import uuid 
 import click 
 from pathlib import Path 
 
@@ -35,6 +36,8 @@ def main (
     assert(df is not None)
 
     df_len = len(df) 
+
+    df['UUID'] = [uuid.uuid4() for i in range(df_len)]
 
     # Init the dataframe 
     def add_df_col (col :str, default_v=None): 

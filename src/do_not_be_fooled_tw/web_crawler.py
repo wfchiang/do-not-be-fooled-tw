@@ -93,7 +93,7 @@ class DataManager (object):
         assert(acquired)
         try: 
             print('DataManager saving for {} samples'.format(len(self.df)))
-            self.df.to_excel(self.output_filepath) 
+            self.df.to_excel(self.output_filepath, index=False) 
         finally: 
             self.lock.release() 
 
