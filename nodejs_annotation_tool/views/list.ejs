@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>Nodejs Annotation Tool</title>
+    </head>
+    <body> 
+        <h1>Here is the data to be annotated</h1>
+        <table border=1>
+            <tr>
+                <th>URL</th>
+                <th>Title</th>
+                <th>Article</th>
+                <th>Labels</th>
+                <th>UUID</th>
+            </tr>
+            <% rows.forEach((row, rid) => { %>
+            <tr>
+                <td><%= row.url %></td>
+                <td><%= row.title %></td> 
+                <td><%= row.article %></td> 
+                <td>
+                    <label>Anit-China: </label>
+                    <div>
+                      <input type="radio" id="Anti_China_<%= rid %>_n" name="Anti_China_<%= rid %> value="-1" <% if(row.Anti_China==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="Anti_China_<%= rid %>_0" name="Anti_China_<%= rid %> value="0" <% if(row.Anti_China==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="Anti_China_<%= rid %>_1" name="Anti_China_<%= rid %> value="1" <% if(row.Anti_China==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+                    <label>Anit-Japan: </label>
+                    <div>
+                      <input type="radio" id="Anti_Japan_<%= rid %>_n" name="Anti_Japan_<%= rid %> value="-1" <% if(row.Anti_Japan==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="Anti_Japan_<%= rid %>_0" name="Anti_Japan_<%= rid %> value="0" <% if(row.Anti_Japan==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="Anti_Japan_<%= rid %>_1" name="Anti_Japan_<%= rid %> value="1" <% if(row.Anti_Japan==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+                    <label>Anit-US: </label>
+                    <div>
+                      <input type="radio" id="Anti_US_<%= rid %>_n" name="Anti_US_<%= rid %> value="-1" <% if(row.Anti_US==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="Anti_US_<%= rid %>_0" name="Anti_US_<%= rid %> value="0" <% if(row.Anti_US==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="Anti_US_<%= rid %>_1" name="Anti_US_<%= rid %> value="1" <% if(row.Anti_US==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+                </td> 
+                <td><%= row.UUID %></td>
+            </tr>
+            <% }); %>
+        </table>
+    </body> 
+</html> 

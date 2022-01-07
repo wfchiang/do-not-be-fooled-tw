@@ -8,7 +8,7 @@ const path = require('path');
 const {BigQuery} = require('@google-cloud/bigquery');
 
 const app = express();
-app.set('view engine', 'pug'); 
+app.set('view engine', 'ejs'); 
 
 const bigquery = new BigQuery() 
 
@@ -17,7 +17,7 @@ const bigquery = new BigQuery()
 async function bq_query() {
     console.log("bq_query started"); 
 
-    const query = 'SELECT * FROM \`wfchiang-dev.do_not_be_fooled_tw.2021_10_19_setn\` LIMIT 1';
+    const query = 'SELECT * FROM \`wfchiang-dev.do_not_be_fooled_tw.2021_10_19_setn\` LIMIT 2';
 
     const options = {
         query: query, 
@@ -56,15 +56,21 @@ app.get('/', (req, res) => {
             console.log('>> begin <<'); 
             console.log(rows);
             console.log('>> end <<');
-            res.render('list.pug', {
-                rows: rows
-            })
-            // res.sendFile(path.join(__dirname, "/templates/index.html"));        
+            // res.render(
+            //     'index.ejs', 
+            //     {}
+            // );
+            res.render(
+                'list.ejs', 
+                {
+                    rows: rows 
+                }
+            );
         }) 
         .catch(err => {
             console.log(err); 
             res.status(500).render(
-                'error.pug', 
+                'error.ejs', 
                 {
                     message: err 
                 }
