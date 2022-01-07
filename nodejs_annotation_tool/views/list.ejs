@@ -1,6 +1,79 @@
 <html>
     <head>
         <title>Nodejs Annotation Tool</title>
+        <script>
+            let getLabelingRadioValue = function (element_name) {
+                let elem_n = document.getElementById(element_name + '_n');
+                if (elem_n == null) { console.error('Element ' + element_name + '_n' + ' does not exist'); }
+
+                let elem_0 = document.getElementById(element_name + '_0'); 
+                if (elem_n == null) { console.error('Element ' + element_name + '_0' + ' does not exist'); }
+
+                let elem_1 = document.getElementById(element_name + '_1'); 
+                if (elem_n == null) { console.error('Element ' + element_name + '_1' + ' does not exist'); }
+
+                let elem_value = undefined; 
+                if (elem_n.checked) { 
+                    elem_value = -1; 
+                }
+                if (elem_0.checked) { 
+                    elem_value = 0; 
+                }
+                if (elem_1.checked) {
+                    elem_value = 1; 
+                }
+                
+                return elem_value; 
+            }; 
+
+            let postForUpdate = function (rid) {
+                let updateEndpoint = '/update'; 
+                
+                let uuid = document.getElementById('UUID_' + String(rid)).innerText;
+
+                let Anti_China = getLabelingRadioValue('Anti_China_' + String(rid)); 
+                let Anti_Japan = getLabelingRadioValue('Anti_Japan_' + String(rid)); 
+                let Anti_US = getLabelingRadioValue('Anti_US_' + String(rid)); 
+
+                let China_Fellow = getLabelingRadioValue('China_Fellow_' + String(rid)); 
+                let Japan_Fellow = getLabelingRadioValue('Japan_Fellow_' + String(rid)); 
+                let US_Fellow = getLabelingRadioValue('US_Fellow_' + String(rid)); 
+
+                let Anti_KMT = getLabelingRadioValue('Anti_KMT_' + String(rid)); 
+                let KMT_Fellow = getLabelingRadioValue('KMT_Fellow_' + String(rid)); 
+
+                let Anti_DPP = getLabelingRadioValue('Anti_DPP_' + String(rid)); 
+                let DPP_Fellow = getLabelingRadioValue('DPP_Fellow_' + String(rid)); 
+
+                let Anti_Taiwan_Gov = getLabelingRadioValue('Anti_Taiwan_Gov_' + String(rid)); 
+                let Taiwan_Gov_Fellow = getLabelingRadioValue('Taiwan_Gov_Fellow_' + String(rid)); 
+
+                let xhr = new XMLHttpRequest(); 
+                xhr.open('POST', updateEndpoint, false); // synchronous call  
+                xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8'); 
+                xhr.send(JSON.stringify(
+                    {
+                        'UUID': uuid, 
+                        'Anti_China': Anti_China, 
+                        'Anti_Japan': Anti_Japan, 
+                        'Anti_US': Anti_US, 
+                        'China_Fellow': China_Fellow, 
+                        'Japan_Fellow': Japan_Fellow, 
+                        'US_Fellow': US_Fellow, 
+                        'Anti_KMT': Anti_KMT, 
+                        'KMT_Fellow': KMT_Fellow, 
+                        'Anti_DPP': Anti_DPP, 
+                        'DPP_Fellow': DPP_Fellow, 
+                        'Anti_Taiwan_Gov': Anti_Taiwan_Gov, 
+                        'Taiwan_Gov_Fellow': Taiwan_Gov_Fellow
+                    }
+                ));
+
+                // console.log(xhr.responseText); 
+                
+                return xhr; 
+            }; 
+        </script> 
     </head>
     <body> 
         <h1>Here is the data to be annotated</h1>
@@ -27,6 +100,7 @@
                       <input type="radio" id="Anti_China_<%= rid %>_1" name="Anti_China_<%= rid %> value="1" <% if(row.Anti_China==1) { %> checked <% } %> ></input>
                       <label>Yes</label>
                     </div>
+
                     <label>Anit-Japan: </label>
                     <div>
                       <input type="radio" id="Anti_Japan_<%= rid %>_n" name="Anti_Japan_<%= rid %> value="-1" <% if(row.Anti_Japan==-1) { %> checked <% } %> ></input>
@@ -36,6 +110,7 @@
                       <input type="radio" id="Anti_Japan_<%= rid %>_1" name="Anti_Japan_<%= rid %> value="1" <% if(row.Anti_Japan==1) { %> checked <% } %> ></input>
                       <label>Yes</label>
                     </div>
+
                     <label>Anit-US: </label>
                     <div>
                       <input type="radio" id="Anti_US_<%= rid %>_n" name="Anti_US_<%= rid %> value="-1" <% if(row.Anti_US==-1) { %> checked <% } %> ></input>
@@ -45,10 +120,102 @@
                       <input type="radio" id="Anti_US_<%= rid %>_1" name="Anti_US_<%= rid %> value="1" <% if(row.Anti_US==1) { %> checked <% } %> ></input>
                       <label>Yes</label>
                     </div>
+
+                    <label>China-Fellow: </label>
+                    <div>
+                      <input type="radio" id="China_Fellow_<%= rid %>_n" name="China_Fellow_<%= rid %> value="-1" <% if(row.China_Fellow==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="China_Fellow_<%= rid %>_0" name="China_Fellow_<%= rid %> value="0" <% if(row.China_Fellow==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="China_Fellow_<%= rid %>_1" name="China_Fellow_<%= rid %> value="1" <% if(row.China_Fellow==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+
+                    <label>Japan-Fellow: </label>
+                    <div>
+                      <input type="radio" id="Japan_Fellow_<%= rid %>_n" name="Japan_Fellow_<%= rid %> value="-1" <% if(row.Japan_Fellow==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="Japan_Fellow_<%= rid %>_0" name="Japan_Fellow_<%= rid %> value="0" <% if(row.Japan_Fellow==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="Japan_Fellow_<%= rid %>_1" name="Japan_Fellow_<%= rid %> value="1" <% if(row.Japan_Fellow==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+
+                    <label>US-Fellow: </label>
+                    <div>
+                      <input type="radio" id="US_Fellow_<%= rid %>_n" name="US_Fellow_<%= rid %> value="-1" <% if(row.US_Fellow==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="US_Fellow_<%= rid %>_0" name="US_Fellow_<%= rid %> value="0" <% if(row.US_Fellow==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="US_Fellow_<%= rid %>_1" name="US_Fellow_<%= rid %> value="1" <% if(row.US_Fellow==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+
+                    <label>Anit-KMT: </label>
+                    <div>
+                      <input type="radio" id="Anti_KMT_<%= rid %>_n" name="Anti_KMT_<%= rid %> value="-1" <% if(row.Anti_KMT==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="Anti_KMT_<%= rid %>_0" name="Anti_KMT_<%= rid %> value="0" <% if(row.Anti_KMT==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="Anti_KMT_<%= rid %>_1" name="Anti_KMT_<%= rid %> value="1" <% if(row.Anti_KMT==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+
+                    <label>KMT-Fellow: </label>
+                    <div>
+                      <input type="radio" id="KMT_Fellow_<%= rid %>_n" name="KMT_Fellow_<%= rid %> value="-1" <% if(row.KMT_Fellow==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="KMT_Fellow_<%= rid %>_0" name="KMT_Fellow_<%= rid %> value="0" <% if(row.KMT_Fellow==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="KMT_Fellow_<%= rid %>_1" name="KMT_Fellow_<%= rid %> value="1" <% if(row.KMT_Fellow==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+
+                    <label>Anit-DPP: </label>
+                    <div>
+                      <input type="radio" id="Anti_DPP_<%= rid %>_n" name="Anti_DPP_<%= rid %> value="-1" <% if(row.Anti_DPP==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="Anti_DPP_<%= rid %>_0" name="Anti_DPP_<%= rid %> value="0" <% if(row.Anti_DPP==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="Anti_DPP_<%= rid %>_1" name="Anti_DPP_<%= rid %> value="1" <% if(row.Anti_DPP==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+                    
+                    <label>DPP-Fellow: </label>
+                    <div>
+                      <input type="radio" id="DPP_Fellow_<%= rid %>_n" name="DPP_Fellow_<%= rid %> value="-1" <% if(row.DPP_Fellow==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="DPP_Fellow_<%= rid %>_0" name="DPP_Fellow_<%= rid %> value="0" <% if(row.DPP_Fellow==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="DPP_Fellow_<%= rid %>_1" name="DPP_Fellow_<%= rid %> value="1" <% if(row.DPP_Fellow==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+
+                    <label>Anit-Taiwan-Gov: </label>
+                    <div>
+                      <input type="radio" id="Anti_Taiwan_Gov_<%= rid %>_n" name="Anti_Taiwan_Gov_<%= rid %> value="-1" <% if(row.Anti_Taiwan_Gov==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="Anti_Taiwan_Gov_<%= rid %>_0" name="Anti_Taiwan_Gov_<%= rid %> value="0" <% if(row.Anti_Taiwan_Gov==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="Anti_Taiwan_Gov_<%= rid %>_1" name="Anti_Taiwan_Gov_<%= rid %> value="1" <% if(row.Anti_Taiwan_Gov==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
+                    
+                    <label>Taiwan-Gov-Fellow: </label>
+                    <div>
+                      <input type="radio" id="Taiwan_Gov_Fellow_<%= rid %>_n" name="Taiwan_Gov_Fellow_<%= rid %> value="-1" <% if(row.Taiwan_Gov_Fellow==-1) { %> checked <% } %> ></input>
+                      <label>not labeled</label> 
+                      <input type="radio" id="Taiwan_Gov_Fellow_<%= rid %>_0" name="Taiwan_Gov_Fellow_<%= rid %> value="0" <% if(row.Taiwan_Gov_Fellow==0) { %> checked <% } %> ></input>
+                      <label>No</label>
+                      <input type="radio" id="Taiwan_Gov_Fellow_<%= rid %>_1" name="Taiwan_Gov_Fellow_<%= rid %> value="1" <% if(row.Taiwan_Gov_Fellow==1) { %> checked <% } %> ></input>
+                      <label>Yes</label>
+                    </div>
                 </td> 
-                <td><%= row.UUID %></td>
+                <td id='UUID_<%= rid %>'><%= row.UUID %></td>
             </tr>
             <% }); %>
         </table>
+
+        <button onclick="postForUpdate(0)">Submit</button>
     </body> 
 </html> 

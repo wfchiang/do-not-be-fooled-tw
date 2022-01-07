@@ -9,6 +9,7 @@ const {BigQuery} = require('@google-cloud/bigquery');
 
 const app = express();
 app.set('view engine', 'ejs'); 
+app.use(express.json()); 
 
 const bigquery = new BigQuery() 
 
@@ -17,7 +18,7 @@ const bigquery = new BigQuery()
 async function bq_query() {
     console.log("bq_query started"); 
 
-    const query = 'SELECT * FROM \`wfchiang-dev.do_not_be_fooled_tw.2021_10_19_setn\` LIMIT 2';
+    const query = 'SELECT * FROM \`wfchiang-dev.do_not_be_fooled_tw.2021_10_19_setn\` LIMIT 1';
 
     const options = {
         query: query, 
@@ -46,9 +47,11 @@ app.get('/ping', (req, res) => {
     res.json({}); 
 }); 
 
+
 // app.get('/', (req, res) => {
 //     res.render('index.pug'); 
 // });
+
 
 app.get('/', (req, res) => {
     bq_query()
@@ -63,6 +66,7 @@ app.get('/', (req, res) => {
             res.render(
                 'list.ejs', 
                 {
+                    hostname: req.hostname, 
                     rows: rows 
                 }
             );
@@ -78,6 +82,18 @@ app.get('/', (req, res) => {
         }); 
 
     console.log('bq_query jon scheduled'); 
+});
+
+
+app.post('/update', (req, res) => {
+    console.log('endpoint /update called...'); 
+    
+    let req_json = req.body; 
+    console.log(req_json); 
+
+    res.json({
+        message: 'done'
+    }); 
 });
 
 
