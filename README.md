@@ -42,10 +42,16 @@ gcloud init --console-only
 
 ### Authenticate Dev Nodejs Application 
 
-Once download `wfchiang-dev-service-account.json` from GCS... 
+Download `wfchiang-dev-service-account.json` from GCS... 
 
 ```
-export GOOGLE_APPLICATION_CREDENTIALS=<KEY_PATH>
+gsutil cp gs://wfchiang-dev/credentials/wfchiang-dev-service-account.json /home/runner/do-not-be-fooled-tw
+```
+
+Once downloaded... 
+
+```
+export GOOGLE_APPLICATION_CREDENTIALS=/home/runner/do-not-be-fooled-tw/wfchiang-dev-service-account.json
 ```
 
 ### Run the Dev Nodejs Annotation Tool (Locally)

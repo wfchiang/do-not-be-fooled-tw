@@ -69,9 +69,9 @@
                     }
                 ));
 
-                // console.log(xhr.responseText); 
+                console.log(xhr.responseText); 
                 
-                return xhr; 
+                location.reload(); 
             }; 
         </script> 
     </head>
@@ -90,7 +90,7 @@
                 <!-- <td><%= row.url %></td> --> 
                 <td><%= row.title %></td> 
                 <td><%= row.article %></td> 
-                <td>
+                <td style="width: 300">
                     <label>Anit-China: </label>
                     <div>
                       <input type="radio" id="Anti_China_<%= rid %>_n" name="Anti_China_<%= rid %> value="-1" <% if(row.Anti_China==-1) { %> checked <% } %> ></input>
