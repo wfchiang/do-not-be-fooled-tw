@@ -7,7 +7,8 @@ setup(
         'openpyxl', 
         'pandas', 
         'scrapy', 
-        'click'
+        'click', 
+        'validators'
     ], 
     packages=find_packages('src'), 
     package_dir={

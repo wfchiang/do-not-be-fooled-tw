@@ -9,12 +9,12 @@ pip install .
 
 ### Running the Web Crawler 
 ```
-python -m do_not_be_fooled_tw.main --start-at https://www.setn.com --life-in-sec 3 --output ./20211014_setn.xlsx 
+python -m do_not_be_fooled_tw.main --start-at https://www.setn.com --life-in-sec 3 --output ./20211014_setn.csv 
 ```
 
 ### Initializing the Data Sheet 
 ```
-python -m do_not_be_fooled_tw.data.init_data_sheet --input-file ./20220217_setn.csv --output-file ./20220217_setn_init.csv 
+python -m do_not_be_fooled_tw.data.init_data_sheet --input-file ./20220217_setn.csv --output-file ./20220217_setn_init.xlsx 
 ```
 
 ### Example Entry News Sites 

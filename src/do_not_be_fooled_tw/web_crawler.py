@@ -5,6 +5,8 @@ import pandas as pd
 import threading 
 import regex as re 
 import datetime 
+import time 
+import validators 
 
 # ====
 # Globals 
@@ -93,7 +95,7 @@ class DataManager (object):
         assert(acquired)
         try: 
             print('DataManager saving for {} samples'.format(len(self.df)))
-            self.df.to_csv(self.output_filepath, index=False) 
+            self.df.to_excel(self.output_filepath, encoding='UTF-8', index=False) 
         finally: 
             self.lock.release() 
 
@@ -252,6 +254,9 @@ class WebSpiderMan (scrapy.Spider):
     def is_interesting_url (self, url): 
         parsed_url = urlparse(url) 
 
+        if (not validators.url(url)): 
+            return False 
+
         current_url_host = parsed_url.hostname 
         if (not current_url_host.endswith(self.start_hostname)): 
             return False 
@@ -276,10 +281,7 @@ class WebSpiderMan (scrapy.Spider):
         if (self.is_timeout()): 
             return 
 
-        if (not self.is_interesting_url(url)): 
-            return 
-
-        if (len(article) > 0): 
+        if (self.is_interesting_url(url) and len(article) > 0): 
             if (not self.data_manager.is_visited(url)): 
                 self.data_manager.add(
                     url=url, 
@@ -292,12 +294,20 @@ class WebSpiderMan (scrapy.Spider):
                         abs_l = l 
                         if (not self.is_abs_url(l)): 
                             abs_l = urljoin(url, l)
-                        self.exploration_manager.add(abs_l)     
+                        if (self.is_interesting_url(abs_l)): 
+                            self.exploration_manager.add(abs_l)    
                     except: 
                         pass 
 
-        url_to_explore = self.exploration_manager.get() 
-        yield scrapy.Request(url_to_explore, self.parse)
+        while(True): 
+            url_to_explore = self.exploration_manager.get() 
+            print(f'<<<< {url_to_explore}')
+            
+            if (url_to_explore is not None): 
+                yield scrapy.Request(url_to_explore, self.parse)
+                break 
+            else: 
+                time.sleep(0.1) 
 
     def close (self, reason): 
         self.data_manager.save() 
