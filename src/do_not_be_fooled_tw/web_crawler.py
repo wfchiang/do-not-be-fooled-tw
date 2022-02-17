@@ -93,7 +93,7 @@ class DataManager (object):
         assert(acquired)
         try: 
             print('DataManager saving for {} samples'.format(len(self.df)))
-            self.df.to_excel(self.output_filepath, index=False) 
+            self.df.to_csv(self.output_filepath, index=False) 
         finally: 
             self.lock.release() 
 
@@ -141,6 +141,35 @@ class DataManager (object):
             return False 
 
         return True 
+
+# ====
+# Management class for exploring the internet 
+# ====
+class ExplorationManager (object): 
+    def __init__ (self, max_urls :int=1000): 
+        self.max_urls = max_urls 
+        self.urls = [] 
+        self.lock = threading.Lock() 
+
+    def add (self, new_url): 
+        acquired = self.lock.acquire(blocking=True) 
+        try: 
+            if (len(self.urls) < self.max_urls): 
+                if (new_url not in self.urls): 
+                    self.urls.append(new_url) 
+        finally: 
+            self.lock.release() 
+        
+    def get (self): 
+        acquired = self.lock.acquire(blocking=True) 
+        old_url = None 
+        try: 
+            if (len(self.urls) > 0): 
+                old_url = self.urls[0]
+                self.urls = self.urls[1:]
+        finally: 
+            self.lock.release() 
+        return old_url 
 
 # ==== 
 # Utils for data retrieval  
@@ -205,6 +234,8 @@ class WebSpiderMan (scrapy.Spider):
             self.life_in_sec = 1 
 
         self.data_manager = DataManager(output_filepath=output_filepath)
+
+        self.exploration_manager = ExplorationManager() 
         
         self.start_time = datetime.datetime.now() 
     
@@ -261,9 +292,12 @@ class WebSpiderMan (scrapy.Spider):
                         abs_l = l 
                         if (not self.is_abs_url(l)): 
                             abs_l = urljoin(url, l)
-                        yield scrapy.Request(abs_l, self.parse)
+                        self.exploration_manager.add(abs_l)     
                     except: 
                         pass 
+
+        url_to_explore = self.exploration_manager.get() 
+        yield scrapy.Request(url_to_explore, self.parse)
 
     def close (self, reason): 
         self.data_manager.save() 

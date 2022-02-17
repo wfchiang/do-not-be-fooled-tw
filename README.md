@@ -12,6 +12,11 @@ pip install .
 python -m do_not_be_fooled_tw.main --start-at https://www.setn.com --life-in-sec 3 --output ./20211014_setn.xlsx 
 ```
 
+### Initializing the Data Sheet 
+```
+python -m do_not_be_fooled_tw.data.init_data_sheet --input-file ./20220217_setn.csv --output-file ./20220217_setn_init.csv 
+```
+
 ### Example Entry News Sites 
 
 * SETN: https://www.setn.com/  
