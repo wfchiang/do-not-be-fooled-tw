@@ -247,9 +247,6 @@ class WebSpiderMan (scrapy.Spider):
         article = get_article(response) 
         links = get_links(response) 
 
-        if (self.is_timeout()): 
-            return 
-
         if (self.is_interesting_url(url) and len(article) > 0): 
             if (not self.data_manager.is_visited(url)): 
                 self.data_manager.add(
@@ -263,7 +260,8 @@ class WebSpiderMan (scrapy.Spider):
                         abs_l = l 
                         if (not self.is_abs_url(l)): 
                             abs_l = urljoin(url, l)
-                            yield scrapy.Request(abs_l, self.parse)
+                            if (not self.is_timeout()): 
+                                yield scrapy.Request(abs_l, self.parse)
                     except: 
                         pass 
 
