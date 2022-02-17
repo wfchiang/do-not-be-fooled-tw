@@ -263,7 +263,8 @@ class WebSpiderMan (scrapy.Spider):
                         abs_l = l 
                         if (not self.is_abs_url(l)): 
                             abs_l = urljoin(url, l)
-                            yield scrapy.Request(abs_l, self.parse)
+                            if (not self.is_timeout()): 
+                                yield scrapy.Request(abs_l, self.parse)
                     except: 
                         pass 
 
