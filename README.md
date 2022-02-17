@@ -9,7 +9,7 @@ pip install .
 
 ### Running the Web Crawler 
 ```
-python -m do_not_be_fooled_tw.main --start-at https://www.setn.com --life-in-sec 3 --output ./20211014_setn.csv 
+python -m do_not_be_fooled_tw.main --start-at https://www.setn.com --life-in-sec 3 --output ./20220217_setn.xlsx 
 ```
 
 ### Initializing the Data Sheet 

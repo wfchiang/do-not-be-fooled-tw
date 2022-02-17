@@ -144,35 +144,6 @@ class DataManager (object):
 
         return True 
 
-# ====
-# Management class for exploring the internet 
-# ====
-class ExplorationManager (object): 
-    def __init__ (self, max_urls :int=1000): 
-        self.max_urls = max_urls 
-        self.urls = [] 
-        self.lock = threading.Lock() 
-
-    def add (self, new_url): 
-        acquired = self.lock.acquire(blocking=True) 
-        try: 
-            if (len(self.urls) < self.max_urls): 
-                if (new_url not in self.urls): 
-                    self.urls.append(new_url) 
-        finally: 
-            self.lock.release() 
-        
-    def get (self): 
-        acquired = self.lock.acquire(blocking=True) 
-        old_url = None 
-        try: 
-            if (len(self.urls) > 0): 
-                old_url = self.urls[0]
-                self.urls = self.urls[1:]
-        finally: 
-            self.lock.release() 
-        return old_url 
-
 # ==== 
 # Utils for data retrieval  
 # ====
@@ -236,8 +207,6 @@ class WebSpiderMan (scrapy.Spider):
             self.life_in_sec = 1 
 
         self.data_manager = DataManager(output_filepath=output_filepath)
-
-        self.exploration_manager = ExplorationManager() 
         
         self.start_time = datetime.datetime.now() 
     
@@ -294,20 +263,9 @@ class WebSpiderMan (scrapy.Spider):
                         abs_l = l 
                         if (not self.is_abs_url(l)): 
                             abs_l = urljoin(url, l)
-                        if (self.is_interesting_url(abs_l)): 
-                            self.exploration_manager.add(abs_l)    
+                            yield scrapy.Request(abs_l, self.parse)
                     except: 
                         pass 
-
-        while(True): 
-            url_to_explore = self.exploration_manager.get() 
-            print(f'<<<< {url_to_explore}')
-            
-            if (url_to_explore is not None): 
-                yield scrapy.Request(url_to_explore, self.parse)
-                break 
-            else: 
-                time.sleep(0.1) 
 
     def close (self, reason): 
         self.data_manager.save() 
