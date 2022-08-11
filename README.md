@@ -25,6 +25,11 @@ python -m do_not_be_fooled_tw.data.init_data_sheet --input-file ./20220217_setn.
 
 ## Dev Note 
 
+### Packaging 
+```bash  
+python setup.py sdist 
+```
+
 ### Google Cloud SDK Installation 
 
 In tools... 

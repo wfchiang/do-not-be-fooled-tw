@@ -216,7 +216,7 @@ class WebSpiderMan (scrapy.Spider):
 
     def is_timeout (self): 
         now_time = datetime.datetime.now() 
-        if (now_time - self.start_time > datetime.timedelta(seconds=self.life_in_sec)): 
+        if ((now_time - self.start_time).total_seconds() > self.life_in_sec): 
             return True
         return False 
 
@@ -242,28 +242,29 @@ class WebSpiderMan (scrapy.Spider):
         return False 
 
     def parse (self, response):
-        url = response.url 
-        title = get_title(response) 
-        article = get_article(response) 
-        links = get_links(response) 
-
-        if (self.is_interesting_url(url) and len(article) > 0): 
-            if (not self.data_manager.is_visited(url)): 
-                self.data_manager.add(
-                    url=url, 
-                    title=title, 
-                    article=article
-                )
-
-                for l in links: 
-                    try: 
-                        abs_l = l 
-                        if (not self.is_abs_url(l)): 
-                            abs_l = urljoin(url, l)
-                            if (not self.is_timeout()): 
-                                yield scrapy.Request(abs_l, self.parse)
-                    except: 
-                        pass 
+        if (not self.is_timeout()): 
+            url = response.url 
+            title = get_title(response) 
+            article = get_article(response) 
+            links = get_links(response) 
+        
+            if (self.is_interesting_url(url) and len(article) > 0): 
+                if (not self.data_manager.is_visited(url)): 
+                    self.data_manager.add(
+                        url=url, 
+                        title=title, 
+                        article=article
+                    )
+    
+                    for l in links: 
+                        try: 
+                            abs_l = l 
+                            if (not self.is_abs_url(l)): 
+                                abs_l = urljoin(url, l)
+                                if (not self.is_timeout()): 
+                                    yield scrapy.Request(abs_l, self.parse)
+                        except: 
+                            pass 
 
     def close (self, reason): 
         self.data_manager.save() 
