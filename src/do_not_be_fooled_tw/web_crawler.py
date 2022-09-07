@@ -320,7 +320,7 @@ class WebSpiderMan (scrapy.Spider):
             return True 
         return False 
 
-    def parse (self, response):
+    def parse (self, response): 
         if (not self.is_timeout()): 
             url = response.url 
             title = get_title(response) 
@@ -337,11 +337,12 @@ class WebSpiderMan (scrapy.Spider):
     
                     for l in links: 
                         try: 
-                            abs_l = l 
                             if (not self.is_abs_url(l)): 
                                 abs_l = urljoin(url, l)
-                                if (not self.is_timeout()): 
-                                    yield scrapy.Request(abs_l, self.parse)
+                            else: 
+                                abs_l = l    
+                            if (self.is_interesting_url(abs_l)): 
+                                yield scrapy.Request(abs_l, self.parse)
                         except: 
                             pass 
 
