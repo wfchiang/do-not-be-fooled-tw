@@ -1,4 +1,5 @@
-from typing import List 
+import json 
+from typing import List, Union  
 from urllib.parse import urlparse, urljoin 
 import scrapy 
 import pandas as pd 
@@ -17,6 +18,90 @@ BLACK_URL_SEGMENTS = [
 
 MIN_TITLE_LENGTH = 1 
 MIN_ARTICLE_LENGTH = 10
+
+DEFAULT_CONFIG = {
+    "stop_symbols": [
+        "|", 
+        "【", 
+        "】", 
+        "● ", 
+        "◎ ", 
+        "《", 
+        "》", 
+        "▲",
+    ], 
+    "stop_phrases": [
+        "setn.com", 
+        "SETN.COM", 
+        "CTWANT", 
+        "0:00", 
+        "看更多", 
+        "中華日報", 
+        "民眾日報", 
+        "專題報導", 
+        "彰化報導", 
+        "我要投票",
+        "Yahoo奇摩", 
+        "中時新聞網", 
+        "中天快點TV", 
+        "台灣新生報", 
+        "台視新聞網", 
+        "中廣新聞網", 
+        "台灣好新聞", 
+        "直接看結果", 
+        "三立新聞網",
+        "TVBS新聞網", 
+        "Yahoo奇摩（新聞）",  
+        "Yahoo奇摩（即時新聞）", 
+        "今日新聞NOWnews", 
+        "鏡週刊Mirror Media", 
+        "三立新聞網24小時直播頻道", 
+    ]
+}
+
+# ====
+# Text preprocessor class 
+# ====
+class TextPreproc (object): 
+    def __init__ (self, config_file :Union[str, None]=None): 
+        if (config_file is None): 
+            self.config = json.loads(json.dumps(DEFAULT_CONFIG)) 
+            
+        else: 
+            with open(config_file, 'r') as f: 
+                self.config = json.load(f) 
+
+    def preproc (self, texts :Union[List[str], str]): 
+        is_single_str = (type(texts) is str) 
+
+        if (is_single_str): 
+            texts = [texts]
+
+        new_texts = [] 
+        for t in texts: 
+            # remove stop symbols 
+            for ss in self.config['stop_symbols']: 
+                t = re.sub(ss, ' ', t)
+                
+            # remove stop phrases
+            def _remove_phrase (_p, _t): 
+                _t = re.sub(f'^{_p}\s+', ' ', _t) 
+                _t = re.sub(f'\s+{_p}$', ' ', _t) 
+                _t = re.sub(f'\s+{_p}\s+', ' ', _t) 
+                return _t 
+                
+            for sw in self.config['stop_phrases']: 
+                t = _remove_phrase(sw, t) 
+                t = _remove_phrase(' '.join(sw), t) 
+                
+            # reduce spaces 
+            t = re.sub('[\s]+', ' ', t)
+            t = t.strip() 
+
+            # finish the preproc of a text 
+            new_texts.append(t) 
+
+        return (new_texts[0] if (is_single_str ) else new_texts) 
 
 # ====
 # Class: Sample
@@ -49,6 +134,8 @@ class DataManager (object):
         self.df = pd.DataFrame() 
 
         self.lock = threading.Lock() 
+
+        self.text_preproc = TextPreproc() 
 
     def is_visited (self, url :str): 
         assert(type(url) is str) 
@@ -102,24 +189,16 @@ class DataManager (object):
     # ====
     # Function: sample pre-processing 
     # ====
-    def preproc_text (self, text :str): 
-        assert(type(text) is str) 
-
-        text = text.strip() 
-        text = re.sub('[\s]+', ' ', text)
-
-        return text 
-
     def preproc_sample (self, sample :Sample): 
         assert(isinstance(sample, Sample))
 
         post_sample = sample.clone() 
 
         # title 
-        post_sample.data['title']   = self.preproc_text(post_sample.data['title']) 
+        post_sample.data['title']   = self.text_preproc.preproc(post_sample.data['title']) 
 
         # article 
-        post_sample.data['article'] = self.preproc_text(post_sample.data['article'])
+        post_sample.data['article'] = self.text_preproc.preproc(post_sample.data['article'])
 
         # return 
         return post_sample 

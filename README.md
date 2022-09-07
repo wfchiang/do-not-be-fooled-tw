@@ -21,7 +21,9 @@ python -m do_not_be_fooled_tw.data.init_data_sheet --input-file ./20220217_setn.
 
 * SETN: https://www.setn.com/  
 
-* Yahoo News: https://tw.news.yahoo.com/ 
+* Yahoo News: https://tw.news.yahoo.com/
+
+* TVBS: https://tvbs.com.tw/ 
 
 ## Dev Note 
 
